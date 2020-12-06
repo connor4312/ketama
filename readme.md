@@ -6,7 +6,7 @@ Ketama is a JavaScript/TypeScript implementation of the [libketama](https://www.
 
     npm install --save ketama
 
-Then go forth with confidence:
+Then hash things:
 
 ```js
 // alternatively: const { HashRing } = require('ketama');
@@ -33,11 +33,12 @@ export function doWorkOnMultipleServers(input) {
 
 ## Table of Contents
 
-- [HashRing(\[nodes\], \[hashFunction\])](#hashringnodes-hashfunction)
-- [hashRing.addNode(node\[, weight\])](#hashringaddnodenode-weight)
-- [hashRing.removeNode(node)](#hashringremovenodenode)
-- [hashRing.getNode(input)](#hashringgetnodeinput)
-- [hashRing.getNodes(input, replicas)](#hashringgetnodesinput-replicas)
+- - [HashRing(\[nodes\], \[hashFunction\])](#hashringnodes-hashfunction)
+    - [hashRing.addNode(node\[, weight\])](#hashringaddnodenode-weight)
+    - [hashRing.removeNode(node)](#hashringremovenodenode)
+    - [hashRing.getNode(input)](#hashringgetnodeinput)
+    - [hashRing.getNodes(input, replicas)](#hashringgetnodesinput-replicas)
+- [Related Projects](#related-projects)
 
 ## HashRing(\[nodes], \[hashFunction])
 
@@ -63,7 +64,7 @@ new HashRing([], 'md5'); // hash with md5 instead
 new HashRing([], buf => myCustomHash().readInt32BE()); // custom function
 ```
 
-## hashRing.addNode(node\[, weight])
+### hashRing.addNode(node\[, weight])
 
 Adds a new node to the existing hashring. The node can be _either_ a string, or an object with a string property "key" which will be used internally to hash against.
 
@@ -76,7 +77,7 @@ You can optionally specify a weight as the second argument. Weights are proporti
 
 If the node already exists, it is replaced; for example, you can call `addNode` multiple times to update a node's weight.
 
-## hashRing.removeNode(node)
+### hashRing.removeNode(node)
 
 Removes a node previously added to the hash ring.
 
@@ -86,7 +87,7 @@ ring.removeNode('127.0.0.1');
 
 No-op if the node is not in the ring.
 
-## hashRing.getNode(input)
+### hashRing.getNode(input)
 
 Gets the node on which work should be done for the given input, which should be either a string or buffer. Returns the object or string originally given to `addNode` or `new HashRing()`, or returns `undefined` if the ring is empty.
 
@@ -95,7 +96,7 @@ const server = ring.getNode(inputData);
 doWorkOn(server);
 ```
 
-## hashRing.getNodes(input, replicas)
+### hashRing.getNodes(input, replicas)
 
 Gets the "replicas" number of nodes that should handle the input, which should be either a string or buffer. The returned array length wiill equal the number of replicas, except if there are fewer nodes available than replicas requested, in which case all nodes are returned.
 
@@ -104,3 +105,9 @@ for (const server of ring.getNodes(input, 2)) {
   doWorkOn(server);
 }
 ```
+
+# Related Projects
+
+- [libketama](https://github.com/RJ/ketama) -- the original (with native bindings in other languages)
+- [serialx/hashring](https://github.com/serialx/hashring) -- a library I used in services and where I borrowed implemenation pointers from; Go is much easier for me to read than C :)
+- [node-hashring](https://github.com/3rd-Eden/node-hashring) -- a prior implementation in JS. It's good but is more complex and makes assumptions about use case; I wanted a very lightweight and generic hashring for use in [another libary](https://github.com/microsoft/etcd3)
